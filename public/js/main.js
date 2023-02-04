@@ -1,59 +1,66 @@
-function onSubmit(e) {
-  e.preventDefault();
+// Event handler for form submit
+const onSubmit = (e) => {
+    // Prevent default form submission
+    e.preventDefault();
 
-  document.querySelector('.msg').textContent = '';
-  document.querySelector('#image').src = '';
+    // Reset previous image and message
+    document.querySelector(".msg").textContent = "";
+    document.querySelector("#image").src = "";
 
-  const prompt = document.querySelector('#prompt').value;
-  const size = document.querySelector('#size').value;
+    // Get user inputs
+    const prompt = document.querySelector("#prompt").value;
+    const size = document.querySelector("#size").value;
 
-  if (prompt === '') {
-    alert('Please add some text');
-    return;
-  }
-
-  generateImageRequest(prompt, size);
-}
-
-async function generateImageRequest(prompt, size) {
-  try {
-    showSpinner();
-
-    const response = await fetch('/openai/generateimage', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt,
-        size,
-      }),
-    });
-
-    if (!response.ok) {
-      removeSpinner();
-      throw new Error('That image could not be generated');
+    // Check if text input is empty
+    if (prompt === "") {
+        alert("Text is required");
+        return;
     }
 
-    const data = await response.json();
-    // console.log(data);
+    // Call image generation function
+    generateImageRequest(prompt, size);
+};
 
-    const imageUrl = data.data;
+const generateImageRequest = async (prompt, size) => {
+    try {
+        showSpinner();
 
-    document.querySelector('#image').src = imageUrl;
+        const response = await fetch("/openai/generateimage", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                prompt,
+                size,
+            }),
+        });
 
-    removeSpinner();
-  } catch (error) {
-    document.querySelector('.msg').textContent = error;
-  }
-}
+        // checking if request is appropriate
+        if (!response.ok) {
+            removeSpinner();
+            throw new Error("That image is not allowed to generate");
+        }
 
-function showSpinner() {
-  document.querySelector('.spinner').classList.add('show');
-}
+        // jsonify
+        const data = await response.json();
 
-function removeSpinner() {
-  document.querySelector('.spinner').classList.remove('show');
-}
+        // getting url from response
+        const imageUrl = data.data;
 
-document.querySelector('#image-form').addEventListener('submit', onSubmit);
+        // giving source URL to the image
+        document.querySelector("#image").src = imageUrl;
+
+        removeSpinner();
+    } catch (error) {
+        document.querySelector(".msg").textContent = error;
+    }
+};
+
+const showSpinner = () =>
+    document.querySelector(".spinner").classList.add("show");
+
+const removeSpinner = () =>
+    document.querySelector(".spinner").classList.remove("show");
+
+document.querySelector("#image-form").addEventListener("submit", onSubmit);

@@ -1,17 +1,21 @@
-const path = require('path');
-const express = require('express');
-const dotenv = require('dotenv').config();
+const path = require("path");
+const express = require("express");
+const dotenv = require("dotenv").config();
+
+// Load environment variables from .env file
 const port = process.env.PORT || 5000;
 
 const app = express();
 
-// Enable body parser
+// Middleware to parse request bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Set static folder
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from "public" folder
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/openai', require('./routes/openaiRoutes'));
+// Load OpenAI routes
+app.use("/openai", require("./routes/openaiRoutes"));
 
+// Start the server
 app.listen(port, () => console.log(`Server started on port ${port}`));
